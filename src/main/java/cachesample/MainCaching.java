@@ -3,6 +3,7 @@ package cachesample;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -22,12 +23,27 @@ public class MainCaching {
 		//Max cache size
 		cache = CacheBuilder.newBuilder().maximumSize(3).build(loader);
 		loadAndPrint(cache);
+		System.out.println("Last 3 cache are present above .....");
 		
-		//Expires after 10 seconds
-		cache = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.SECONDS).build(loader);
+		//Expires after 5 seconds
+		cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build(loader);
 		loadAndPrint(cache);
-		Thread.sleep(10000);
+		System.out.println("Thread sleeping for 5 sec .....");
+		Thread.sleep(5001);
 		print(cache);
+		
+		//Cache Eviction
+		cache = CacheBuilder.newBuilder().build(loader);
+		loadAndPrint(cache);
+		System.out.println("cache size before eviction: "+cache.size());
+		cache.invalidate("1");
+		print(cache);
+		System.out.println("cache size: "+cache.size());
+		
+		//Cache without loader
+		Cache<String, Person> cacheNoLoader = CacheBuilder.newBuilder().build();
+		cacheNoLoader.put("100", new Person("Peter", 39));
+		System.out.println("\nCache without cache loader: "+cacheNoLoader.getIfPresent("100"));
 
 	}
 
